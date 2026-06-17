@@ -47,7 +47,7 @@
   <nav id="sidebar" class="sidebar">
     <div class="sidebar-header">
       <h4><span>i</span>Topik</h4>
-      <button id="sidebarCloseBtn" class="btn btn-sm btn-outline-light d-md-none" style="border:none;color:rgba(255,255,255,0.6);font-size:1.25rem;" onclick="document.getElementById('sidebar').classList.remove('open')">
+      <button id="sidebarCloseBtn" class="btn btn-sm" style="border:none;color:rgba(255,255,255,0.6);font-size:1.25rem;padding:0;line-height:1;">
         <i class="bi bi-x-lg"></i>
       </button>
     </div>
@@ -80,6 +80,9 @@
     <a class="nav-link" data-page="voice-logs" onclick="navigateTo('voice-logs')"><i class="bi bi-mic"></i> Ovoz jurnallari</a>
   </nav>
 
+  <!-- Sidebar Overlay (mobile) -->
+  <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
   <!-- Main Content -->
   <div class="main-content">
     <!-- Topbar -->
@@ -102,42 +105,42 @@
 <!-- ==================== DASHBOARD ==================== -->
 <div id="page-dashboard" class="page-section active">
   <div class="row g-3 mb-4">
-    <div class="col-md-4 col-6">
+    <div class="col-md-4 col-sm-6 col-12">
       <div class="stat-card">
         <div class="stat-icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-people"></i></div>
         <div class="stat-value" id="stat-totalUsers">0</div>
         <div class="stat-label">Jami foydalanuvchilar</div>
       </div>
     </div>
-    <div class="col-md-4 col-6">
+    <div class="col-md-4 col-sm-6 col-12">
       <div class="stat-card">
         <div class="stat-icon bg-success bg-opacity-10 text-success"><i class="bi bi-person-check"></i></div>
         <div class="stat-value" id="stat-activeUsers">0</div>
         <div class="stat-label">Faol foydalanuvchilar</div>
       </div>
     </div>
-    <div class="col-md-4 col-6">
+    <div class="col-md-4 col-sm-6 col-12">
       <div class="stat-card">
         <div class="stat-icon bg-info bg-opacity-10 text-info"><i class="bi bi-cart"></i></div>
         <div class="stat-value" id="stat-totalOrders">0</div>
         <div class="stat-label">Jami buyurtmalar</div>
       </div>
     </div>
-    <div class="col-md-4 col-6">
+    <div class="col-md-4 col-sm-6 col-12">
       <div class="stat-card">
         <div class="stat-icon bg-warning bg-opacity-10 text-warning"><i class="bi bi-currency-exchange"></i></div>
         <div class="stat-value" id="stat-revenue">0 UZS</div>
         <div class="stat-label">Daromad</div>
       </div>
     </div>
-    <div class="col-md-4 col-6">
+    <div class="col-md-4 col-sm-6 col-12">
       <div class="stat-card">
         <div class="stat-icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-journal-text"></i></div>
         <div class="stat-value" id="stat-totalSubscriptions">0</div>
         <div class="stat-label">Jami obunalar</div>
       </div>
     </div>
-    <div class="col-md-4 col-6">
+    <div class="col-md-4 col-sm-6 col-12">
       <div class="stat-card">
         <div class="stat-icon bg-success bg-opacity-10 text-success"><i class="bi bi-check-circle"></i></div>
         <div class="stat-value" id="stat-activeSubscriptions">0</div>
@@ -665,10 +668,13 @@
             <div class="col-md-6"><label class="form-label">Username</label><input type="text" id="userUsername" class="form-control" required></div>
             <div class="col-md-6"><label class="form-label">Parol</label><input type="password" id="userPassword" class="form-control" placeholder="Yangi parol"></div>
             <div class="col-md-6"><label class="form-label">Balans</label><input type="number" id="userBalance" class="form-control" value="0"></div>
-            <div class="col-md-6 d-flex align-items-end gap-3 pb-2">
-              <div class="form-check"><input type="checkbox" id="userIsBlocked" class="form-check-input"><label class="form-check-label" for="userIsBlocked">Bloklangan</label></div>
-              <div class="form-check"><input type="checkbox" id="userIsAdmin" class="form-check-input"><label class="form-check-label" for="userIsAdmin">Admin</label></div>
-              <div class="form-check"><input type="checkbox" id="userIsStaff" class="form-check-input"><label class="form-check-label" for="userIsStaff">Staff</label></div>
+            <div class="col-md-6">
+              <label class="form-label d-block mb-1">Holatlar</label>
+              <div class="d-flex gap-3 flex-wrap">
+                <div class="form-check"><input type="checkbox" id="userIsBlocked" class="form-check-input"><label class="form-check-label" for="userIsBlocked">Bloklangan</label></div>
+                <div class="form-check"><input type="checkbox" id="userIsAdmin" class="form-check-input"><label class="form-check-label" for="userIsAdmin">Admin</label></div>
+                <div class="form-check"><input type="checkbox" id="userIsStaff" class="form-check-input"><label class="form-check-label" for="userIsStaff">Staff</label></div>
+              </div>
             </div>
           </div>
         </div>

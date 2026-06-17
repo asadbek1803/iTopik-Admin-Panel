@@ -11,7 +11,8 @@ function navigateTo(page) {
   if (link) link.classList.add('active');
   currentPage = page;
   loadPageData(page);
-  if (window.innerWidth < 768) document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
 }
 
 function loadPageData(page) {
@@ -184,7 +185,7 @@ function renderDashboardRecentOrders(orders) {
     <tr>
       <td>${o.order_id || o.id}</td>
       <td>${o.user_fullname || o.user_username || o.user_id || o.user || '-'}</td>
-      <td>${o.amount_display || new Number(o.amount || 0).toLocaleString() + ' UZS'}</td>
+      <td>${o.amount_display || Number(o.amount || 0).toLocaleString() + ' UZS'}</td>
       <td><span class="badge bg-${o.status === 'success' || o.status === 'paid' ? 'success' : o.status === 'pending' ? 'warning' : 'danger'}">${o.status || '-'}</span></td>
       <td>${formatDateTime(o.created_at)}</td>
     </tr>
@@ -238,7 +239,7 @@ function renderUsers(data) {
   if (!tbody) return;
   const results = data.results || data;
   if (!results.length) {
-    tbody.innerHTML = '<tr><td colspan="8" class="text-center">No users found</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" class="text-center">Foydalanuvchi topilmadi</td></tr>';
   } else {
       tbody.innerHTML = results.map(u => `
         <tr>
@@ -246,7 +247,7 @@ function renderUsers(data) {
           <td>${u.phone_number || '-'}</td>
           <td>${u.full_name || '-'}</td>
           <td>${u.username || '-'}</td>
-          <td>${new Number(u.balance || 0).toLocaleString()}</td>
+          <td>${Number(u.balance || 0).toLocaleString()}</td>
           <td>
             ${!u.is_active ? '<span class="badge bg-danger">Bloklangan</span>' : u.is_superuser ? '<span class="badge bg-info ms-1">Superadmin</span>' : '<span class="badge bg-success">Faol</span>'}
             ${u.is_staff ? '<span class="badge bg-secondary ms-1">Staff</span>' : ''}
@@ -395,7 +396,7 @@ function renderProducts(data) {
   if (!tbody) return;
   const results = data.results || data;
   if (!results.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="text-center">No products found</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center">Mahsulot topilmadi</td></tr>';
     return;
   }
   tbody.innerHTML = results.map(p => `
@@ -403,7 +404,7 @@ function renderProducts(data) {
       <td>${p.id}</td>
       <td>${p.name || '-'}</td>
       <td>${p.description ? truncateText(p.description, 60) : '-'}</td>
-      <td>${new Number(p.price || 0).toLocaleString()} UZS</td>
+      <td>${Number(p.price || 0).toLocaleString()} UZS</td>
       <td>${p.duration_days || '-'} days</td>
       <td>
         <button class="btn btn-sm btn-outline-primary me-1" onclick="showProductModal(${p.id})" title="Edit"><i class="bi bi-pencil"></i></button>
@@ -498,7 +499,7 @@ function renderAccesses(data) {
   if (!tbody) return;
   const results = data.results || data;
   if (!results.length) {
-    tbody.innerHTML = '<tr><td colspan="7" class="text-center">No accesses found</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" class="text-center">Ruxsat topilmadi</td></tr>';
     return;
   }
   tbody.innerHTML = results.map(a => `
@@ -578,7 +579,7 @@ function renderSessions(data) {
   if (!tbody) return;
   const results = data.results || data;
   if (!results.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="text-center">No sessions found</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center">Sessiya topilmadi</td></tr>';
     return;
   }
   tbody.innerHTML = results.map(s => `
@@ -632,14 +633,14 @@ function renderOrders(data) {
   if (!tbody) return;
   const results = data.results || data;
   if (!results.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="text-center">No orders found</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center">Buyurtma topilmadi</td></tr>';
     return;
   }
   tbody.innerHTML = results.map(o => `
     <tr>
       <td>${o.order_id || o.id}</td>
       <td>${o.user_fullname || o.user_username || o.user_id || '-'}</td>
-      <td>${o.amount_display || new Number(o.amount || 0).toLocaleString() + ' UZS'}</td>
+      <td>${o.amount_display || Number(o.amount || 0).toLocaleString() + ' UZS'}</td>
       <td><span class="badge bg-${o.status === 'success' || o.status === 'paid' ? 'success' : o.status === 'pending' ? 'warning' : 'danger'}">${o.status || '-'}</span></td>
       <td>${formatDateTime(o.created_at)}</td>
       <td>
@@ -686,14 +687,14 @@ function renderTopups(data) {
   if (!tbody) return;
   const results = data.results || data;
   if (!results.length) {
-    tbody.innerHTML = '<tr><td colspan="5" class="text-center">No topups found</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center">To'ldirish topilmadi</td></tr>';
     return;
   }
   tbody.innerHTML = results.map(t => `
     <tr>
       <td>${t.id ? t.id.substring(0, 8) + '...' : t.id}</td>
       <td>${t.user_fullname || t.user_username || t.user || '-'}</td>
-      <td>${new Number(t.amount || 0).toLocaleString()} UZS</td>
+      <td>${Number(t.amount || 0).toLocaleString()} UZS</td>
       <td><span class="badge bg-${t.status === 'paid' ? 'success' : t.status === 'pending' ? 'warning' : 'danger'}">${t.status || '-'}</span></td>
       <td>${formatDateTime(t.created_at)}</td>
     </tr>
@@ -723,14 +724,14 @@ function renderCoupons(data) {
   if (!tbody) return;
   const results = data.results || data;
   if (!results.length) {
-    tbody.innerHTML = '<tr><td colspan="7" class="text-center">No coupons found</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" class="text-center">Kupon topilmadi</td></tr>';
     return;
   }
   tbody.innerHTML = results.map(c => `
     <tr>
       <td>${c.id}</td>
       <td><code>${c.code || '-'}</code></td>
-      <td>${c.discount_type === 'percent' ? c.discount_value + '%' : new Number(c.discount_value || 0).toLocaleString() + ' UZS'}</td>
+      <td>${c.discount_type === 'percent' ? c.discount_value + '%' : Number(c.discount_value || 0).toLocaleString() + ' UZS'}</td>
       <td>${c.max_uses || '∞'} / ${c.used_count || 0}</td>
       <td>${c.is_active ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-danger">Inactive</span>'}</td>
       <td>${c.expires_at ? formatDate(c.expires_at) : '-'}</td>
@@ -844,7 +845,7 @@ function renderRedemptions(data) {
   if (!tbody) return;
   const results = data.results || data;
   if (!results.length) {
-    tbody.innerHTML = '<tr><td colspan="5" class="text-center">No redemptions found</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center">Kupon ishlatish topilmadi</td></tr>';
     return;
   }
   tbody.innerHTML = results.map(r => `
@@ -852,7 +853,7 @@ function renderRedemptions(data) {
       <td>${r.id}</td>
       <td>${r.coupon_code || r.coupon || '-'}</td>
       <td>${r.user_fullname || r.user_username || r.user || '-'}</td>
-      <td>${new Number(r.amount || 0).toLocaleString()} UZS</td>
+      <td>${Number(r.amount || 0).toLocaleString()} UZS</td>
       <td>${formatDateTime(r.redeemed_at)}</td>
     </tr>
   `).join('');
@@ -881,7 +882,7 @@ function renderQuestions(data) {
   if (!tbody) return;
   const results = data.results || data;
   if (!results.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="text-center">No questions found</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center">Savol topilmadi</td></tr>';
     return;
   }
   tbody.innerHTML = results.map(q => `
@@ -1005,7 +1006,7 @@ function renderChoices(data) {
   if (!tbody) return;
   const results = data.results || data;
   if (!results.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="text-center">No choices found</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center">Variant topilmadi</td></tr>';
     return;
   }
   tbody.innerHTML = results.map(c => `
@@ -1034,7 +1035,7 @@ function showChoiceModal(id = null) {
     title.textContent = 'Edit Choice';
     showLoading();
     apiGet('/api/admin/choices/', id).then(c => {
-      document.getElementById('choiceQuestion').value = c.question || '';
+      document.getElementById('choiceQuestion').value = c.question ? (typeof c.question === 'object' ? c.question.id : c.question) : '';
       document.getElementById('choiceTextUz').value = c.text || '';
       document.getElementById('choiceTextRu').value = '';
       document.getElementById('choiceTextEn').value = '';
@@ -1109,7 +1110,7 @@ function renderAudio(data) {
   if (!tbody) return;
   const results = data.results || data;
   if (!results.length) {
-    tbody.innerHTML = '<tr><td colspan="5" class="text-center">No audio tracks found</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center">Audio trek topilmadi</td></tr>';
     return;
   }
   tbody.innerHTML = results.map(a => `
@@ -1214,7 +1215,7 @@ function renderNotifications(data) {
   if (!tbody) return;
   const results = data.results || data;
   if (!results.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="text-center">No notifications found</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center">Bildirishnoma topilmadi</td></tr>';
     return;
   }
   tbody.innerHTML = results.map(n => `
@@ -1245,7 +1246,7 @@ function showNotificationModal(id = null) {
     title.textContent = 'Edit Notification';
     showLoading();
     apiGet('/api/admin/notifications/', id).then(n => {
-      document.getElementById('notificationUser').value = n.user || '';
+      document.getElementById('notificationUser').value = n.user ? (typeof n.user === 'object' ? n.user.id : n.user) : '';
       document.getElementById('notificationTitle').value = n.title || '';
       document.getElementById('notificationMessage').value = n.message || '';
       document.getElementById('notificationType').value = n.type || 'info';
@@ -1345,7 +1346,7 @@ function renderGrammar(data) {
   if (!tbody) return;
   const results = data.results || data;
   if (!results.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="text-center">No grammar mistakes found</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center">Grammatik xato topilmadi</td></tr>';
     return;
   }
   tbody.innerHTML = results.map(g => `
@@ -1375,7 +1376,7 @@ function showGrammarModal(id = null) {
     title.textContent = 'Edit Grammar Mistake';
     showLoading();
     apiGet('/api/admin/grammar-mistakes/', id).then(g => {
-      document.getElementById('grammarUser').value = g.user || '';
+      document.getElementById('grammarUser').value = g.user ? (typeof g.user === 'object' ? g.user.id : g.user) : '';
       document.getElementById('grammarOriginal').value = g.last_example || '';
       document.getElementById('grammarCorrected').value = '';
       document.getElementById('grammarMistakeType').value = g.topic || '';
@@ -1448,7 +1449,7 @@ function renderAiChat(data) {
   if (!tbody) return;
   const results = data.results || data;
   if (!results.length) {
-    tbody.innerHTML = '<tr><td colspan="5" class="text-center">No messages found</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center">Xabar topilmadi</td></tr>';
     return;
   }
   tbody.innerHTML = results.map(m => `
@@ -1485,14 +1486,14 @@ function renderPlans(data) {
   if (!tbody) return;
   const results = data.results || data;
   if (!results.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="text-center">No plans found</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center">Reja topilmadi</td></tr>';
     return;
   }
   tbody.innerHTML = results.map(p => `
     <tr>
       <td>${p.id}</td>
       <td>${p.name || '-'}</td>
-      <td>${new Number(p.price || 0).toLocaleString()} UZS</td>
+      <td>${Number(p.price || 0).toLocaleString()} UZS</td>
       <td>${p.duration_days || '-'} days</td>
       <td>${p.is_active ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>'}</td>
       <td>
@@ -1588,7 +1589,7 @@ function renderSubscriptions(data) {
   if (!tbody) return;
   const results = data.results || data;
   if (!results.length) {
-    tbody.innerHTML = '<tr><td colspan="7" class="text-center">No subscriptions found</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" class="text-center">Obuna topilmadi</td></tr>';
     return;
   }
   tbody.innerHTML = results.map(s => `
@@ -1618,8 +1619,9 @@ function showSubscriptionModal(id = null) {
     title.textContent = 'Edit Subscription';
     showLoading();
     apiGet('/api/admin/user-subscriptions/', id).then(s => {
-      document.getElementById('subscriptionUser').value = s.user || '';
-      document.getElementById('subscriptionPlan').value = s.plan || '';
+      document.getElementById('subscriptionUser').value = s.user ? (typeof s.user === 'object' ? s.user.id : s.user) : '';
+      const planVal = s.plan ? (typeof s.plan === 'object' ? s.plan.id : s.plan) : '';
+      document.getElementById('subscriptionPlan').value = planVal;
       document.getElementById('subscriptionStatus').value = s.status || 'active';
       document.getElementById('subscriptionStartDate').value = s.start_date ? s.start_date.substring(0, 10) : '';
       document.getElementById('subscriptionEndDate').value = s.end_date ? s.end_date.substring(0, 10) : '';
@@ -1701,7 +1703,7 @@ function renderVoiceLogs(data) {
   if (!tbody) return;
   const results = data.results || data;
   if (!results.length) {
-    tbody.innerHTML = '<tr><td colspan="5" class="text-center">No voice logs found</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center">Ovoz jurnali topilmadi</td></tr>';
     return;
   }
   tbody.innerHTML = results.map(v => `
@@ -1718,24 +1720,24 @@ function renderVoiceLogs(data) {
 
 // ==================== PAGINATION ====================
 
-function updatePagination(pageKey, data, listFn) {
+function updatePagination(pageKey, data) {
   const page = currentPages[pageKey] || 1;
   const count = data.count || 0;
   const totalPages = Math.ceil(count / 20) || 1;
   const info = document.querySelector(`#page-${pageKey} .pagination-info`);
-  if (info) info.textContent = `Page ${page} of ${totalPages} (${count} total)`;
+  if (info) info.textContent = `${page} / ${totalPages} (jami: ${count})`;
   const prev = document.querySelector(`#page-${pageKey} .btn-prev`);
   const next = document.querySelector(`#page-${pageKey} .btn-next`);
   if (prev) {
     prev.disabled = !data.previous;
     prev.onclick = () => {
-      if (page > 1) loadPageData(pageKey);
+      if (page > 1) { currentPages[pageKey] = page - 1; loadPageData(pageKey); }
     };
   }
   if (next) {
     next.disabled = !data.next;
     next.onclick = () => {
-      if (page < totalPages) loadPageData(pageKey);
+      if (page < totalPages) { currentPages[pageKey] = page + 1; loadPageData(pageKey); }
     };
   }
 }
@@ -1744,10 +1746,15 @@ function updatePagination(pageKey, data, listFn) {
 
 document.addEventListener('DOMContentLoaded', () => {
   initAuth();
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
   const sidebarToggle = document.getElementById('sidebarToggle');
-  if (sidebarToggle) {
-    sidebarToggle.onclick = () => document.getElementById('sidebar').classList.toggle('open');
-  }
+  const sidebarClose = document.getElementById('sidebarCloseBtn');
+  function openSidebar() { sidebar.classList.add('open'); overlay.classList.add('show'); }
+  function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('show'); }
+  if (sidebarToggle) { sidebarToggle.onclick = () => { if (sidebar.classList.contains('open')) closeSidebar(); else openSidebar(); }; }
+  if (sidebarClose) { sidebarClose.onclick = closeSidebar; }
+  if (overlay) { overlay.onclick = closeSidebar; }
   const loginForm = document.getElementById('loginForm');
   if (loginForm) {
     loginForm.onsubmit = (e) => { e.preventDefault(); handleLogin(); };

@@ -40,7 +40,7 @@ async function apiRequest(method, path, body = null, params = {}, isFormData = f
     headers['Content-Type'] = 'application/json';
   }
 
-  const fetchOptions = { method, headers };
+  const fetchOptions = { method, headers, credentials: 'include' };
   if (body) {
     fetchOptions.body = isFormData ? body : JSON.stringify(body);
   }
@@ -56,11 +56,17 @@ async function apiRequest(method, path, body = null, params = {}, isFormData = f
     } else {
       clearTokens();
       window.location.reload();
-      throw new Error('Token refresh failed');
+      throw new Error('Session expired. Please login again.');
     }
   }
 
   if (res.status === 204) return null;
+
+  const contentType = res.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    const text = await res.text();
+    throw new Error(`Server returned ${contentType || 'unknown format'}. Please ensure you are using a local server (not file://). Run: python3 -m http.server 8080`);
+  }
 
   const data = await res.json();
   if (!res.ok) {
@@ -90,6 +96,9 @@ async function apiLogin(username, password) {
   const data = await apiRequest('POST', '/api/admin/auth/login/', { username, password });
   if (data.access) {
     setTokens(data.access, data.refresh || null);
+  } else {
+    // If no JWT token returned, create a placeholder so isAuthenticated() works
+    setTokens('session_' + Date.now(), null);
   }
   return data;
 }
@@ -101,35 +110,44 @@ async function apiLogout() {
   clearTokens();
 }
 
+function joinUrl(base, ...parts) {
+  let url = base.replace(/\/+$/, '');
+  for (const p of parts) {
+    const part = String(p).replace(/^\/+|\/+$/g, '');
+    if (part) url += '/' + part;
+  }
+  return url + '/';
+}
+
 // Generic CRUD helpers
 async function apiList(endpoint, params = {}) {
-  return apiRequest('GET', endpoint, null, params);
+  return apiRequest('GET', joinUrl(endpoint), null, params);
 }
 
 async function apiGet(endpoint, id) {
-  return apiRequest('GET', `${endpoint}${id}/`);
+  return apiRequest('GET', id ? joinUrl(endpoint, id) : joinUrl(endpoint));
 }
 
 async function apiCreate(endpoint, data, isFormData = false) {
-  return apiRequest('POST', endpoint, data, {}, isFormData);
+  return apiRequest('POST', joinUrl(endpoint), data, {}, isFormData);
 }
 
 async function apiUpdate(endpoint, id, data, isFormData = false) {
-  return apiRequest('PUT', `${endpoint}${id}/`, data, {}, isFormData);
+  return apiRequest('PUT', joinUrl(endpoint, id), data, {}, isFormData);
 }
 
 async function apiPatch(endpoint, id, data) {
-  return apiRequest('PATCH', `${endpoint}${id}/`, data);
+  return apiRequest('PATCH', joinUrl(endpoint, id), data);
 }
 
 async function apiDelete(endpoint, id) {
-  return apiRequest('DELETE', `${endpoint}${id}/`);
+  return apiRequest('DELETE', joinUrl(endpoint, id));
 }
 
 async function apiAction(endpoint, id, action, data = {}) {
-  return apiRequest('POST', `${endpoint}${id}/${action}/`, data);
+  return apiRequest('POST', joinUrl(endpoint, id, action), data);
 }
 
 async function apiPost(endpoint, data = {}) {
-  return apiRequest('POST', endpoint, data);
+  return apiRequest('POST', joinUrl(endpoint), data);
 }
