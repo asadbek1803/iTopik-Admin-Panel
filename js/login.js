@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
   if (isAuthenticated()) {
-    window.location.replace('dashboard.html');
+    window.location.replace('index.html');
     return;
   }
   const form = document.getElementById('loginForm');
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btnSpinner.classList.remove('d-none');
     try {
       await apiLogin(username, password);
-      window.location.replace('dashboard.html');
+      window.location.replace('index.html');
     } catch (err) {
       errorDiv.textContent = err.message || 'Login xatosi';
       errorDiv.classList.remove('d-none');

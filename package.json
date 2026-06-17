@@ -1,0 +1,26 @@
+{
+  "name": "admin-panel",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/asadbek1803/iTopik-Admin-Panel.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/asadbek1803/iTopik-Admin-Panel/issues"
+  },
+  "homepage": "https://github.com/asadbek1803/iTopik-Admin-Panel#readme",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "http-proxy-middleware": "^4.1.1"
+  }
+}

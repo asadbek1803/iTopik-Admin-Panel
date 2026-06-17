@@ -2,12 +2,30 @@ let currentPage = 'dashboard';
 let currentPages = {};
 let currentFilters = {};
 
-function navigateTo(page) {
-  window.location.href = page + '.html';
+async function navigateTo(page) {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  if (sidebar && sidebar.classList.contains('open')) {
+      sidebar.classList.remove('open');
+      if (overlay) overlay.classList.remove('show');
+  }
+  showLoading();
+  try {
+    const response = await fetch(`pages/${page}.html`);
+    if (!response.ok) throw new Error('Page not found');
+    const html = await response.text();
+    document.getElementById('dynamicPageContent').innerHTML = html;
+    window.location.hash = page;
+    loadPageData(page);
+  } catch (err) {
+    showToast('Sahifa yuklanmadi', 'danger');
+  } finally {
+    hideLoading();
+  }
 }
 
-function loadPageData() {
-  const page = typeof PAGE_ID !== 'undefined' ? PAGE_ID : 'dashboard';
+function loadPageData(pageParam) {
+  const page = pageParam || 'dashboard';
   currentPage = page;
   // Update page title
   const titleEl = document.getElementById('pageTitle');
@@ -665,7 +683,7 @@ function renderTopups(data) {
   if (!tbody) return;
   const results = data.results || data;
   if (!results.length) {
-    tbody.innerHTML = '<tr><td colspan="5" class="text-center">To'ldirish topilmadi</td></tr>';
+    tbody.innerHTML = "<tr><td colspan='5' class='text-center'>To'ldirish topilmadi</td></tr>";
     return;
   }
   tbody.innerHTML = results.map(t => `
@@ -1739,7 +1757,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const logoutBtn = document.getElementById('logoutBtn');
   if (logoutBtn) logoutBtn.onclick = handleLogout;
   // Load current page
-  loadPageData();
+  const initPage = window.location.hash ? window.location.hash.substring(1) : 'dashboard';
+  navigateTo(initPage);
   // Tooltips
   document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
     try { new bootstrap.Tooltip(el); } catch (e) { /* ignore */ }
