@@ -3,19 +3,26 @@ let currentPages = {};
 let currentFilters = {};
 
 function navigateTo(page) {
-  document.querySelectorAll('.page-section').forEach(el => el.style.display = 'none');
-  const target = document.getElementById('page-' + page);
-  if (target) target.style.display = 'block';
+  window.location.href = page + '.html';
+}
+
+function loadPageData() {
+  const page = typeof PAGE_ID !== 'undefined' ? PAGE_ID : 'dashboard';
+  currentPage = page;
+  // Update page title
+  const titleEl = document.getElementById('pageTitle');
+  if (titleEl) {
+    const titles = { dashboard:'Dashboard', users:'Foydalanuvchilar', products:'Mahsulotlar', accesses:'Ruxsatlar', sessions:'Sessiyalar', orders:'Buyurtmalar', topups:"Balans to'ldirish", coupons:'Kuponlar', redemptions:'Kupon ishlatish', questions:'Savollar', choices:'Variantlar', audio:'Audio treklar', notifications:'Bildirishnomalar', grammar:'Grammatika', 'ai-chat':'AI Chat', plans:'Tarif rejalar', subscriptions:'Obunalar', 'voice-logs':'Ovoz jurnallari' };
+    titleEl.textContent = titles[page] || page;
+  }
+  // Update username
+  const userEl = document.getElementById('topbarUser');
+  if (userEl) userEl.textContent = localStorage.getItem('user_info') || 'Admin';
+  // Highlight active nav link
   document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
   const link = document.querySelector(`.nav-link[data-page="${page}"]`);
   if (link) link.classList.add('active');
-  currentPage = page;
-  loadPageData(page);
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('sidebarOverlay').classList.remove('show');
-}
-
-function loadPageData(page) {
+  // Load page data
   switch (page) {
     case 'dashboard': loadDashboard(); break;
     case 'users': loadUsers(currentPages.users || 1); break;
@@ -81,40 +88,11 @@ function truncateText(text, len = 50) {
   return text.length > len ? text.substring(0, len) + '...' : text;
 }
 
-function initAuth() {
-  if (isAuthenticated()) {
-    document.getElementById('loginPage').style.display = 'none';
-    document.getElementById('appContainer').style.display = 'flex';
-    navigateTo('dashboard');
-  } else {
-    document.getElementById('loginPage').style.display = 'flex';
-    document.getElementById('appContainer').style.display = 'none';
-  }
-}
-
-async function handleLogin() {
-  const username = document.getElementById('loginUsername').value.trim();
-  const password = document.getElementById('loginPassword').value.trim();
-  if (!username || !password) { showToast('Please enter username and password', 'danger'); return; }
-  showLoading();
-  try {
-    await apiLogin(username, password);
-    showToast('Login successful');
-    document.getElementById('loginUsername').value = '';
-    document.getElementById('loginPassword').value = '';
-    initAuth();
-  } catch (err) {
-    showToast(err.detail || err.message || 'Login failed', 'danger');
-  } finally {
-    hideLoading();
-  }
-}
-
 async function handleLogout() {
   try {
     await apiLogout();
   } catch (e) { /* ignore */ }
-  initAuth();
+  window.location.replace('login.html');
 }
 
 function applyFilters(page) {
@@ -1745,24 +1723,24 @@ function updatePagination(pageKey, data) {
 // ==================== INIT ====================
 
 document.addEventListener('DOMContentLoaded', () => {
-  initAuth();
+  if (!isAuthenticated()) { window.location.replace('login.html'); return; }
+  document.getElementById('appContainer').style.display = 'block';
+  // Sidebar toggle
   const sidebar = document.getElementById('sidebar');
   const overlay = document.getElementById('sidebarOverlay');
   const sidebarToggle = document.getElementById('sidebarToggle');
   const sidebarClose = document.getElementById('sidebarCloseBtn');
-  function openSidebar() { sidebar.classList.add('open'); overlay.classList.add('show'); }
-  function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('show'); }
-  if (sidebarToggle) { sidebarToggle.onclick = () => { if (sidebar.classList.contains('open')) closeSidebar(); else openSidebar(); }; }
+  function openSidebar() { if (sidebar) sidebar.classList.add('open'); if (overlay) overlay.classList.add('show'); }
+  function closeSidebar() { if (sidebar) sidebar.classList.remove('open'); if (overlay) overlay.classList.remove('show'); }
+  if (sidebarToggle) { sidebarToggle.onclick = () => { if (sidebar && sidebar.classList.contains('open')) closeSidebar(); else openSidebar(); }; }
   if (sidebarClose) { sidebarClose.onclick = closeSidebar; }
   if (overlay) { overlay.onclick = closeSidebar; }
-  const loginForm = document.getElementById('loginForm');
-  if (loginForm) {
-    loginForm.onsubmit = (e) => { e.preventDefault(); handleLogin(); };
-  }
+  // Logout
   const logoutBtn = document.getElementById('logoutBtn');
-  if (logoutBtn) {
-    logoutBtn.onclick = handleLogout;
-  }
+  if (logoutBtn) logoutBtn.onclick = handleLogout;
+  // Load current page
+  loadPageData();
+  // Tooltips
   document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
     try { new bootstrap.Tooltip(el); } catch (e) { /* ignore */ }
   });
