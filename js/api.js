@@ -1,4 +1,4 @@
-const API_BASE = '';
+const API_BASE = 'https://itopik.uz';
 
 function getAccessToken() {
   return localStorage.getItem('access_token');
@@ -24,7 +24,7 @@ function isAuthenticated() {
 }
 
 async function apiRequest(method, path, body = null, params = {}, isFormData = false) {
-  const url = new URL(API_BASE + path);
+  const url = new URL(API_BASE + path, window.location.origin);
   Object.keys(params).forEach(k => {
     if (params[k] !== null && params[k] !== undefined && params[k] !== '') {
       url.searchParams.set(k, params[k]);
