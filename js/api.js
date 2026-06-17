@@ -1,4 +1,4 @@
-const API_BASE = 'https://itopik.uz';
+const API_BASE = '';
 
 function getAccessToken() {
   return localStorage.getItem('access_token');
