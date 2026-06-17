@@ -68,9 +68,19 @@
         </button>
         <h5 class="page-title" id="pageTitle">Dashboard</h5>
       </div>
+      <div class="user-info dropdown">
+        <a href="#" class="d-flex align-items-center text-decoration-none text-dark dropdown-toggle" data-bs-toggle="dropdown">
+          <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width:36px;height:36px;font-weight:600;">A</div>
+          <span class="ms-2 d-none d-md-inline fw-medium" id="topbarUser">Admin</span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="border-radius:12px;">
+          <li><a class="dropdown-item py-2" href="#" onclick="handleLogout()"><i class="bi bi-box-arrow-right me-2 text-danger"></i>Chiqish</a></li>
+        </ul>
+      </div>
+    </div>
+    
     <div class="page-content" id="dynamicPageContent">
       <!-- Content will be injected here dynamically -->
-    </div>
     </div>
   </div>
 </div>

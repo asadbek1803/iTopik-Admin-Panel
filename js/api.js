@@ -47,16 +47,22 @@ async function apiRequest(method, path, body = null, params = {}, isFormData = f
 
   let res = await fetch(url.toString(), fetchOptions);
 
-  if (res.status === 401 && getRefreshToken()) {
-    const refreshed = await tryRefresh();
-    if (refreshed) {
-      headers['Authorization'] = `Bearer ${getAccessToken()}`;
-      fetchOptions.headers = headers;
-      res = await fetch(url.toString(), fetchOptions);
+  if (res.status === 401) {
+    if (getRefreshToken()) {
+      const refreshed = await tryRefresh();
+      if (refreshed) {
+        headers['Authorization'] = `Bearer ${getAccessToken()}`;
+        fetchOptions.headers = headers;
+        res = await fetch(url.toString(), fetchOptions);
+      } else {
+        clearTokens();
+        window.location.replace('login.html');
+        return;
+      }
     } else {
       clearTokens();
-      window.location.reload();
-      throw new Error('Session expired. Please login again.');
+      window.location.replace('login.html');
+      return;
     }
   }
 
